@@ -1,12 +1,16 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router'; // <-- We are importing RouterOutlet now
+import { NavigationComponent } from './navigation/navigation.component'; // <-- 1. Import the new component
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet], // <-- We are ONLY importing RouterOutlet
+  imports: [RouterOutlet, NavigationComponent], // <-- We are ONLY importing RouterOutlet
   template: `
-    <!-- This placeholder tells Angular where to display the screen for the current URL -->
+            <!-- The navigation bar will always be visible -->
+    <app-navigation></app-navigation>
+
+    <!-- The current screen will be displayed below the navbar -->
     <router-outlet></router-outlet>
   `,
   styleUrl: './app.scss'

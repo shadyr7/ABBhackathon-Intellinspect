@@ -1,0 +1,48 @@
+.step-navigation {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  padding: 10px 0;
+  font-family: sans-serif;
+
+  ul {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  li {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    color: #6c757d;
+    cursor: pointer;
+    border-bottom: 3px solid transparent; // Inactive state
+    transition: color 0.2s, border-color 0.2s;
+
+    // Style for the currently active link
+    &.active {
+      color: #007bff;
+      border-bottom-color: #007bff; // Blue underline for active
+      font-weight: bold;
+    }
+
+    .step-number {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 2px solid #6c757d; // Gray border for inactive
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 10px;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    // Active state for the number circle
+    &.active .step-number {
+      border-color: #007bff; // Blue border for active
+    }
+  }
+}

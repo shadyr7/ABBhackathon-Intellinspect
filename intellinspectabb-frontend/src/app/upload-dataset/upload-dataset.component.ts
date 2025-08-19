@@ -52,6 +52,8 @@ export class UploadDatasetComponent {
   }
 
   goToNext(): void {
+    console.log('Storing this data in DataStateService:', this.uploadResult); 
+
     // Store the result in the service BEFORE navigating
     this.dataStateService.setUploadResult(this.uploadResult);
     this.router.navigate(['/date-ranges']);

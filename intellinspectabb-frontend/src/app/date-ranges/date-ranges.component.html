@@ -2,6 +2,7 @@
   <h1>Date Range Selection</h1>
   <p>Step 2 of 4</p>
 
+  <!-- This div will only show up if the timestamps are successfully set in ngOnInit -->
   <div *ngIf="earliestTimestamp && latestTimestamp">
     <p class="info-text">
       Select non-overlapping date ranges for Training, Testing, and Simulation.
@@ -10,7 +11,6 @@
       to <strong>{{ latestTimestamp }}</strong>
     </p>
 
-    <!-- THIS IS THE MISSING SECTION -->
     <div class="cards-container">
       <!-- Training Period Card -->
       <div class="period-card">
@@ -51,7 +51,6 @@
         </div>
       </div>
     </div>
-    <!-- END OF MISSING SECTION -->
 
     <div class="actions">
       <button class="validate-btn" (click)="validateRanges()" [disabled]="isLoading">
@@ -74,17 +73,37 @@
     <div *ngIf="validationResult?.status === 'Valid'" class="summary-grid">
       <div class="summary-card">
         <h4>Training Period</h4>
-        <p>{{ validationResult.trainingDurationDays }} days</p>
+        <p>{{ validationResult.trainingRecordCount | number }} records</p>
+        <span>{{ validationResult.trainingDurationDays }} days</span>
       </div>
       <div class="summary-card">
         <h4>Testing Period</h4>
-        <p>{{ validationResult.testingDurationDays }} days</p>
+        <p>{{ validationResult.testingRecordCount | number }} records</p>
+        <span>{{ validationResult.testingDurationDays }} days</span>
       </div>
       <div class="summary-card">
         <h4>Simulation Period</h4>
-        <p>{{ validationResult.simulationDurationDays }} days</p>
+        <p>{{ validationResult.simulationRecordCount | number }} records</p>
+        <span>{{ validationResult.simulationDurationDays }} days</span>
       </div>
     </div>
-    
+
+    <!-- Timeline Bar Chart - Shows AFTER successful validation -->
+    <div *ngIf="validationResult?.status === 'Valid'" class="chart-container">
+        <h3>Selected Date Ranges Summary</h3>
+  <ngx-charts-bar-vertical
+    [view]="view"
+    [results]="chartData"
+    [customColors]="customColors"
+    [xAxis]="showXAxis"
+    [yAxis]="showYAxis"
+    [showXAxisLabel]="showXAxisLabel"
+    [showYAxisLabel]="showYAxisLabel"
+    [xAxisLabel]="xAxisLabel"
+    [yAxisLabel]="yAxisLabel"
+    (select)="onSelect($event)">
+  </ngx-charts-bar-vertical>
+
+    </div>
   </div>
 </div>

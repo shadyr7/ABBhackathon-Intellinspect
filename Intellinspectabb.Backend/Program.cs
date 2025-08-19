@@ -18,7 +18,10 @@ builder.Services.AddCors(options =>
                       });
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+    });
 
 // Add our DatasetService as a Singleton so it's shared across the app
 builder.Services.AddSingleton<DatasetService>(); // This line tells the app how to create the service
