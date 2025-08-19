@@ -1,0 +1,90 @@
+<div class="container">
+  <h1>Date Range Selection</h1>
+  <p>Step 2 of 4</p>
+
+  <div *ngIf="earliestTimestamp && latestTimestamp">
+    <p class="info-text">
+      Select non-overlapping date ranges for Training, Testing, and Simulation.
+      <br>
+      Available data from: <strong>{{ earliestTimestamp }}</strong> 
+      to <strong>{{ latestTimestamp }}</strong>
+    </p>
+
+    <!-- THIS IS THE MISSING SECTION -->
+    <div class="cards-container">
+      <!-- Training Period Card -->
+      <div class="period-card">
+        <h3>Training Period</h3>
+        <div class="date-picker">
+          <label for="trainStart">Start Date:</label>
+          <input type="date" id="trainStart" [(ngModel)]="trainingStart">
+        </div>
+        <div class="date-picker">
+          <label for="trainEnd">End Date:</label>
+          <input type="date" id="trainEnd" [(ngModel)]="trainingEnd">
+        </div>
+      </div>
+
+      <!-- Testing Period Card -->
+      <div class="period-card">
+        <h3>Testing Period</h3>
+        <div class="date-picker">
+          <label for="testStart">Start Date:</label>
+          <input type="date" id="testStart" [(ngModel)]="testingStart">
+        </div>
+        <div class="date-picker">
+          <label for="testEnd">End Date:</label>
+          <input type="date" id="testEnd" [(ngModel)]="testingEnd">
+        </div>
+      </div>
+
+      <!-- Simulation Period Card -->
+      <div class="period-card">
+        <h3>Simulation Period</h3>
+        <div class="date-picker">
+          <label for="simStart">Start Date:</label>
+          <input type="date" id="simStart" [(ngModel)]="simulationStart">
+        </div>
+        <div class="date-picker">
+          <label for="simEnd">End Date:</label>
+          <input type="date" id="simEnd" [(ngModel)]="simulationEnd">
+        </div>
+      </div>
+    </div>
+    <!-- END OF MISSING SECTION -->
+
+    <div class="actions">
+      <button class="validate-btn" (click)="validateRanges()" [disabled]="isLoading">
+        {{ isLoading ? 'Validating...' : 'Validate Ranges' }}
+      </button>
+      <button class="next-btn" [disabled]="validationResult?.status !== 'Valid'">Next</button>
+    </div>
+
+    <!-- Validation message on success -->
+    <div *ngIf="validationResult?.status === 'Valid'" class="validation-message success">
+      <p>✓ {{ validationResult.message }}</p>
+    </div>
+
+    <!-- Validation message on error -->
+    <div *ngIf="errorMessage" class="validation-message error">
+      <p>✗ {{ errorMessage }}</p>
+    </div>
+
+    <!-- Summary cards AFTER successful validation -->
+    <div *ngIf="validationResult?.status === 'Valid'" class="summary-grid">
+      <div class="summary-card">
+        <h4>Training Period</h4>
+        <p>{{ validationResult.trainingDurationDays }} days</p>
+      </div>
+      <div class="summary-card">
+        <h4>Testing Period</h4>
+        <p>{{ validationResult.testingDurationDays }} days</p>
+      </div>
+      <div class="summary-card">
+        <h4>Simulation Period</h4>
+        <p>{{ validationResult.simulationDurationDays }} days</p>
+      </div>
+    </div>
+    
+  </div>
+</div>

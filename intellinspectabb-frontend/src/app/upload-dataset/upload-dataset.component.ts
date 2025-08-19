@@ -1,16 +1,15 @@
-import { Component } from '@angular/core';
-// We need to import NgIf, DecimalPipe, DatePipe, and PercentPipe from @angular/common
 import { CommonModule, DatePipe, DecimalPipe, NgIf, PercentPipe } from '@angular/common';
+import { Component } from '@angular/core';
+import { Router } from '@angular/router'; // <-- The missing import is here
 import { ApiService } from '../services/api.service';
+import { DataStateService } from '../services/data-state.services';
 
 @Component({
   selector: 'app-upload-dataset',
   standalone: true,
-  // We list the specific pipes and directives we use in the template here
   imports: [CommonModule, NgIf, DecimalPipe, DatePipe, PercentPipe], 
   templateUrl: './upload-dataset.component.html',
   styleUrls: ['./upload-dataset.component.scss'],
-  // We also need to provide the pipes
   providers: [DecimalPipe, DatePipe, PercentPipe]
 })
 export class UploadDatasetComponent {
@@ -20,7 +19,11 @@ export class UploadDatasetComponent {
   errorMessage: string | null = null;
   selectedFileName: string | null = null;
 
-  constructor(private apiService: ApiService) {}
+  constructor(
+    private apiService: ApiService, 
+    private router: Router, 
+    private dataStateService: DataStateService
+  ) {}
 
   onFileSelected(event: any): void {
     const file: File = event.target.files[0];
@@ -48,7 +51,12 @@ export class UploadDatasetComponent {
     }
   }
 
-  // Method to go back to the initial state
+  goToNext(): void {
+    // Store the result in the service BEFORE navigating
+    this.dataStateService.setUploadResult(this.uploadResult);
+    this.router.navigate(['/date-ranges']);
+  }
+
   reset(): void {
     this.isLoading = false;
     this.uploadResult = null;

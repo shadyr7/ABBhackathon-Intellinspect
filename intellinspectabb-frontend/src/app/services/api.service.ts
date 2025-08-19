@@ -14,5 +14,11 @@ export class ApiService {
     const formData = new FormData();
     formData.append('file', file, file.name);
     return this.http.post(this.apiUrl, formData);
+
+  }
+  validateDateRanges(payload: any): Observable<any> {
+    const validateUrl = 'http://localhost:5080/api/DateRanges/validate';
+    return this.http.post(validateUrl, payload);
   }
 }
+

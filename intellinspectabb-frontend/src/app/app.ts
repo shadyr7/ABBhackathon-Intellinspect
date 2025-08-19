@@ -1,15 +1,15 @@
 import { Component } from '@angular/core';
-// Removed RouterOutlet since we are not using it right now
-import { UploadDatasetComponent } from './upload-dataset/upload-dataset.component';
+import { RouterOutlet } from '@angular/router'; // <-- We are importing RouterOutlet now
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [UploadDatasetComponent], // <-- Removed RouterOutlet from here
+  imports: [RouterOutlet], // <-- We are ONLY importing RouterOutlet
   template: `
-    <app-upload-dataset></app-upload-dataset>
+    <!-- This placeholder tells Angular where to display the screen for the current URL -->
+    <router-outlet></router-outlet>
   `,
-  styleUrl: './app.scss' // <-- CORRECTED the filename here
+  styleUrl: './app.scss'
 })
-export class AppComponent { // <-- Note the class name is AppComponent
+export class AppComponent {
 }
