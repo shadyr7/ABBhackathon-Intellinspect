@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\Intellinspectabb.Backend.props" />
+</Project>

@@ -1,0 +1,57 @@
+<div class="container">
+  <h1>Upload Dataset</h1>
+  <p>Step 1 of 4</p>
+
+  <!-- Show Initial Upload Card WHEN there is NO result and it's NOT loading -->
+  <div *ngIf="!isLoading && !uploadResult" class="upload-card" (click)="fileInput.click()">
+    <div class="drop-area">
+      <input type="file" #fileInput (change)="onFileSelected($event)" accept=".csv" hidden>
+      <div class.icon>...</div>
+      <p>Click to select a CSV file or drag and drop</p>
+      <button>Choose File</button>
+    </div>
+  </div>
+
+  <!-- Show Loading Spinner WHEN isLoading is true -->
+  <div *ngIf="isLoading" class="loading-spinner">
+    <p>Analyzing file...</p>
+    <!-- Add a simple CSS spinner here if you like -->
+  </div>
+
+  <!-- Show Error Message WHEN there is an error -->
+  <div *ngIf="errorMessage" class="error-card">
+    <h3>Upload Failed</h3>
+    <p>{{ errorMessage }}</p>
+    <button (click)="reset()">Try Again</button>
+  </div>
+
+  <!-- Show Summary Card WHEN there IS a result -->
+  <div *ngIf="uploadResult" class="summary-container">
+    <div class="file-info">
+      <span>File: <strong>{{ selectedFileName }}</strong></span>
+      <button class="change-file-btn" (click)="reset()">Change File</button>
+    </div>
+
+    <div class="summary-grid">
+      <div class="summary-card">
+        <h4>Total Records</h4>
+        <p>{{ uploadResult.totalRecords | number }}</p>
+      </div>
+      <div class="summary-card">
+        <h4>Total Columns</h4>
+        <p>{{ uploadResult.totalColumns }}</p>
+      </div>
+      <div class="summary-card">
+        <h4>Pass Rate</h4>
+        <p>{{ uploadResult.passRate | percent:'1.2-2' }}</p>
+      </div>
+      <div class="summary-card">
+        <h4>Date Range</h4>
+        <p>{{ uploadResult.earliestTimestamp | date:'yyyy-MM-dd' }} to {{ uploadResult.latestTimestamp | date:'yyyy-MM-dd' }}</p>
+      </div>
+    </div>
+
+    <button class="next-btn">Next</button>
+  </div>
+
+</div>

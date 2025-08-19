@@ -1,0 +1,131 @@
+.container {
+  max-width: 800px;
+  margin: 40px auto;
+  font-family: sans-serif;
+  text-align: center;
+}
+
+.upload-card {
+  background-color: #f9f9f9;
+  border: 2px dashed #ccc;
+  border-radius: 10px;
+  padding: 30px;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+
+  &:hover {
+    background-color: #f1f1f1;
+    border-color: #aaa;
+  }
+}
+
+.drop-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+
+  p {
+    font-size: 1.1rem;
+    color: #555;
+    margin: 0;
+  }
+
+  button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #eee;
+    }
+  }
+}
+
+/* Keep all your existing styles for .container, .upload-card, etc. */
+
+/* --- NEW STYLES --- */
+
+.summary-container {
+  margin-top: 20px;
+  text-align: left;
+}
+
+.file-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+
+.change-file-btn {
+  background: none;
+  border: 1px solid #aaa;
+  color: #333;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 4px;
+  &:hover {
+    background-color: #e0e0e0;
+  }
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  text-align: center;
+}
+
+.summary-card {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  h4 {
+    margin: 0 0 10px;
+    color: #555;
+  }
+  p {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+  }
+}
+
+.error-card {
+  margin-top: 20px;
+  border: 2px solid #e74c3c;
+  background-color: #fbeae5;
+  color: #c0392b;
+  padding: 20px;
+  border-radius: 8px;
+  button {
+    margin-top: 15px;
+    padding: 10px 20px;
+  }
+}
+
+.next-btn {
+  display: block;
+  width: 150px;
+  margin: 30px auto 0;
+  padding: 12px 20px;
+  font-size: 1.1rem;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  &:hover {
+    background-color: #0056b3;
+  }
+}
