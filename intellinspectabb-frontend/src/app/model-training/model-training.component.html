@@ -1,0 +1,70 @@
+<div class="container">
+  <h1>Model Training & Evaluation</h1>
+  <p>Step 3 of 4</p>
+
+  <div class="actions">
+    <!-- Button is disabled while loading or after a successful training -->
+    <button (click)="trainModel()" [disabled]="isLoading || trainingResult">
+      {{ isLoading ? 'Training...' : (trainingResult ? '✓ Model Trained' : 'Train Model') }}
+    </button>
+  </div>
+
+  <!-- Show loading state -->
+  <div *ngIf="isLoading" class="loading-spinner">
+    <p>Training model... this may take a moment.</p>
+  </div>
+  
+  <!-- Show error message if training fails -->
+  <div *ngIf="errorMessage" class="error-card">
+    <h3>Training Failed</h3>
+    <p>{{ errorMessage }}</p>
+  </div>
+
+  <!-- --- NEW RESULTS SECTION --- -->
+  <!-- This entire section appears after training is successful -->
+  <div *ngIf="trainingResult" class="results-container">
+    
+    <!-- Metrics Cards -->
+    <div class="summary-grid">
+      <div class="summary-card">
+        <h4>Accuracy</h4>
+        <p>{{ trainingResult.accuracy | percent:'1.2-2' }}</p>
+      </div>
+      <div class="summary-card">
+        <h4>Precision</h4>
+        <p>{{ trainingResult.precision | percent:'1.2-2' }}</p>
+      </div>
+      <div class="summary-card">
+        <h4>Recall</h4>
+        <p>{{ trainingResult.recall | percent:'1.2-2' }}</p>
+      </div>
+      <div class="summary-card">
+        <h4>F1-Score</h4>
+        <p>{{ trainingResult.f1Score | percent:'1.2-2' }}</p>
+      </div>
+    </div>
+
+    <!-- Visualizations -->
+    <div class="charts-grid">
+      <div class="chart-card">
+        <h3>Model Performance</h3>
+        <!-- The 'SafeUrl' is needed to display a base64 image -->
+        <img [src]="getSanitizedUrl(trainingResult.confusionMatrixData)" alt="Confusion Matrix Donut Chart">
+      </div>
+      <div class="chart-card">
+        <h3>Training Metrics</h3>
+        <!-- Placeholder for the training loss chart -->
+        <div class="placeholder-chart">
+          <p>Training vs. Loss Chart (Placeholder)</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Next Button -->
+    <div class="actions">
+      <button class="next-btn">Next</button>
+    </div>
+
+  </div>
+  <!-- --- END OF NEW RESULTS SECTION --- -->
+</div>

@@ -141,4 +141,18 @@ export class DateRangesComponent implements OnInit {
   onSelect(event: any) {
     console.log('Bar clicked:', event);
   }
+    goToNext(): void {
+    // Create a payload of the selected dates
+    const datePayload = {
+      trainingStart: this.trainingStart,
+      trainingEnd: this.trainingEnd,
+      testingStart: this.testingStart,
+      testingEnd: this.testingEnd,
+      simulationStart: this.simulationStart,
+      simulationEnd: this.simulationEnd
+    };
+    // Store it in our shared service
+    this.dataStateService.setDateRanges(datePayload);
+    this.router.navigate(['/model-training']);
+  }
 }

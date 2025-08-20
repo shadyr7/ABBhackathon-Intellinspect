@@ -6,7 +6,10 @@
   <div *ngIf="!isLoading && !uploadResult" class="upload-card" (click)="fileInput.click()">
     <div class="drop-area">
       <input type="file" #fileInput (change)="onFileSelected($event)" accept=".csv" hidden>
-      <div class.icon>...</div>
+      <div class="icon">
+        <!-- The SVG code goes inside here -->
+       <svg>...</svg>
+      </div>
       <p>Click to select a CSV file or drag and drop</p>
       <button>Choose File</button>
     </div>

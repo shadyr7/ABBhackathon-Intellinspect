@@ -56,7 +56,7 @@
       <button class="validate-btn" (click)="validateRanges()" [disabled]="isLoading">
         {{ isLoading ? 'Validating...' : 'Validate Ranges' }}
       </button>
-      <button class="next-btn" [disabled]="validationResult?.status !== 'Valid'">Next</button>
+      <button class="next-btn" [disabled]="validationResult?.status !== 'Valid'"(click)="goToNext()">Next</button>
     </div>
 
     <!-- Validation message on success -->

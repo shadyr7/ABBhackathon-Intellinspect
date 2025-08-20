@@ -11,11 +11,17 @@ export class DataStateService {
 
   // Create a public observable from the source so components can subscribe to it.
   public uploadResult$ = this.uploadResultSource.asObservable();
-
+  private dateRangesSource = new BehaviorSubject<any>(null);
+  public dateRanges$ = this.dateRangesSource.asObservable();
   constructor() { }
 
   // A method to update the stored upload result.
   setUploadResult(result: any) {
     this.uploadResultSource.next(result);
   }
+  
+
+  setDateRanges(ranges: any) {
+    this.dateRangesSource.next(ranges);
+}
 }

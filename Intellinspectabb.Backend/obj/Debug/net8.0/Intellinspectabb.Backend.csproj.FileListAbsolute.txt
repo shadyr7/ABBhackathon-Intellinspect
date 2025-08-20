@@ -33,3 +33,4 @@ C:\Users\addys\OneDrive\Desktop\abbhackathon\Intellinspectabb.Backend\obj\Debug\
 C:\Users\addys\OneDrive\Desktop\abbhackathon\Intellinspectabb.Backend\obj\Debug\net8.0\ref\Intellinspectabb.Backend.dll
 C:\Users\addys\OneDrive\Desktop\abbhackathon\Intellinspectabb.Backend\bin\Debug\net8.0\CsvHelper.dll
 C:\Users\addys\OneDrive\Desktop\abbhackathon\Intellinspectabb.Backend\obj\Debug\net8.0\Intellinspectabb.Backend.sourcelink.json
+C:\Users\addys\OneDrive\Desktop\abbhackathon\Intellinspectabb.Backend\bin\Debug\net8.0\Newtonsoft.Json.dll

@@ -20,5 +20,10 @@ export class ApiService {
     const validateUrl = 'http://localhost:5080/api/DateRanges/validate';
     return this.http.post(validateUrl, payload);
   }
+   trainModel(payload: any): Observable<any> {
+    // The URL for our new backend endpoint that we will create soon
+    const trainUrl = 'http://localhost:5080/api/DateRanges/train-model';
+    return this.http.post(trainUrl, payload);
+  }
 }
 

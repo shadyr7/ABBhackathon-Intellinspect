@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Intellinspectabb.Backend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+540b4bfedfb9f09f7ee8fa80f80f5601c598b727")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a30b0ab4be32fbf76682adfc10aafcc5cb134589")]
 [assembly: System.Reflection.AssemblyProductAttribute("Intellinspectabb.Backend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Intellinspectabb.Backend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
