@@ -1,8 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Globalization;
+using Intellinspect.Backend.Services;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 using CsvHelper;
+using System.Globalization;
 using CsvHelper.Configuration;
-using Intellinspect.Backend.Services; // <-- Import our new service
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Intellinspect.Backend.Controllers
 {
@@ -12,16 +17,14 @@ namespace Intellinspect.Backend.Controllers
     {
         private readonly DatasetService _datasetService;
 
-        // Inject the DatasetService through the constructor
         public UploadController(DatasetService datasetService)
         {
             _datasetService = datasetService;
         }
 
         [HttpPost]
-        public IActionResult Upload(IFormFile file) // Made this synchronous for simplicity
+        public IActionResult Upload(IFormFile file)
         {
-            // ... (file validation checks remain the same)
             if (file == null || file.Length == 0) return BadRequest(new { error = "No file uploaded." });
             if (!file.FileName.EndsWith(".csv", StringComparison.OrdinalIgnoreCase)) return BadRequest(new { error = "Invalid file type." });
 
@@ -31,21 +34,17 @@ namespace Intellinspect.Backend.Controllers
                 using var reader = new StreamReader(file.OpenReadStream());
                 using var csv = new CsvReader(reader, config);
 
-                // Read header and records separately
                 csv.Read();
                 csv.ReadHeader();
                 var headers = csv.HeaderRecord.ToList();
                 var responseKey = headers.FirstOrDefault(h => h.Equals("Response", StringComparison.OrdinalIgnoreCase));
 
                 if (responseKey == null)
-                {
-                    return BadRequest(new { error = "The CSV file must contain a 'Response' column." });
-                }
-                
-                var records = csv.GetRecords<dynamic>().ToList();
-                if (records.Count == 0) return BadRequest(new { error = "The CSV file is empty." });
+                    return BadRequest(new { error = "CSV must contain a 'Response' column." });
 
-                // --- AUGMENT AND PERSIST LOGIC ---
+                var records = csv.GetRecords<dynamic>().ToList();
+                if (records.Count == 0) return BadRequest(new { error = "CSV is empty." });
+
                 var augmentedRecords = new List<Dictionary<string, object>>();
                 var timestamp = new DateTime(2021, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
@@ -53,34 +52,26 @@ namespace Intellinspect.Backend.Controllers
                 {
                     var dict = (IDictionary<string, object>)record;
                     var newDict = new Dictionary<string, object>(dict, StringComparer.OrdinalIgnoreCase);
-
-                    // Add the synthetic timestamp to each record
                     newDict["synthetic_timestamp"] = timestamp;
                     augmentedRecords.Add(newDict);
-                    
-                    timestamp = timestamp.AddSeconds(1); // Increment timestamp for the next row
+                    timestamp = timestamp.AddHours(1); // <-- THE CRITICAL FIX FOR DATE RANGE
                 }
 
-                // Add the new column to the headers list
                 var augmentedHeaders = new List<string>(headers) { "synthetic_timestamp" };
-
-                // Store the processed data in our singleton service
                 _datasetService.StoreDataset(augmentedHeaders, augmentedRecords);
                 
-                // --- METADATA CALCULATION (now uses augmented data) ---
                 var totalRecords = augmentedRecords.Count;
                 var passCount = augmentedRecords.Count(r => r[responseKey]?.ToString() == "1");
                 var passRate = totalRecords > 0 ? Math.Round((double)passCount / totalRecords, 4) : 0.0;
-                var earliestTimestamp = augmentedRecords.First()["synthetic_timestamp"];
-                var latestTimestamp = augmentedRecords.Last()["synthetic_timestamp"];
-
+                
                 var response = new 
                 {
                     totalRecords,
-                    totalColumns = augmentedHeaders.Count, // Use the new header count
+                    totalColumns = augmentedHeaders.Count,
                     passRate,
-                    earliestTimestamp,
-                    latestTimestamp
+                    earliestTimestamp = augmentedRecords.First()["synthetic_timestamp"],
+                    latestTimestamp = augmentedRecords.Last()["synthetic_timestamp"],
+                    monthlyRecordCounts = augmentedRecords.GroupBy(r => ((DateTime)r["synthetic_timestamp"]).ToString("yyyy-MM")).ToDictionary(g => g.Key, g => g.Count())
                 };
                 
                 return Ok(response);

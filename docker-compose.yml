@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./intellinspectabb-frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./Intellinspectabb.Backend
+    ports:
+      - "5080:8080"
+    environment:
+      - ASPNETCORE_URLS=http://+:8080
+    volumes:
+      - shared_data:/data
+
+  ml-service:
+    build:
+      context: ./ml-service
+    volumes:
+      - shared_data:/data
+
+volumes:
+  shared_data:

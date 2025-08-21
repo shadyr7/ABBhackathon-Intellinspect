@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser'; // <-- 1. Import Sanitizer
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { take } from 'rxjs';
 import { ApiService } from '../services/api.service';
@@ -20,33 +20,46 @@ export class ModelTrainingComponent implements OnInit {
   errorMessage: string | null = null;
 
   constructor(
-    private dataStateService: DataStateService,
-    private apiService: ApiService,
     private router: Router,
-    private sanitizer: DomSanitizer // <-- 2. Inject Sanitizer
+    private apiService: ApiService,
+    private sanitizer: DomSanitizer,
+    private dataStateService: DataStateService
   ) {}
 
   ngOnInit(): void {
-    this.dataStateService.dateRanges$.pipe(take(1)).subscribe(ranges => {
-      if (ranges) {
-        this.dateRanges = ranges;
+    // Get the data from the service
+    this.dataStateService.dateRanges$.pipe(take(1)).subscribe(dateData => {
+      console.log('SCREEN 3: Received these ranges from the service:', dateData);
+
+      if (dateData && dateData.trainingStart) {
+        this.dateRanges = dateData;
       } else {
+        // If the service has no data, go back
         this.router.navigate(['/date-ranges']);
       }
     });
   }
 
   trainModel(): void {
+    if (!this.dateRanges) {
+      this.errorMessage = "Date ranges are not defined. Please go back.";
+      return;
+    }
+
     this.isLoading = true;
     this.trainingResult = null;
     this.errorMessage = null;
 
+    // --- FIXED PAYLOAD FOR BACKEND ---
     const payload = {
-      trainStart: this.dateRanges.trainingStart,
-      trainEnd: this.dateRanges.trainingEnd,
-      testStart: this.dateRanges.testingStart,
-      testEnd: this.dateRanges.testingEnd
+      TrainingStart: this.dateRanges.trainingStart,
+      TrainingEnd: this.dateRanges.trainingEnd,
+      TestingStart: this.dateRanges.testingStart,
+      TestingEnd: this.dateRanges.testingEnd
     };
+    // --- END FIX ---
+
+    console.log('SCREEN 3: Sending this CORRECTED payload to the backend:', payload);
 
     this.apiService.trainModel(payload).subscribe({
       next: (response: any) => {
@@ -61,10 +74,9 @@ export class ModelTrainingComponent implements OnInit {
       }
     });
   }
-  
-  // --- 3. ADD THIS METHOD ---
-  // This method is required to tell Angular that our base64 image string is safe to display
+
   getSanitizedUrl(base64Image: string): SafeUrl {
+    if (!base64Image) return '';
     return this.sanitizer.bypassSecurityTrustUrl('data:image/png;base64,' + base64Image);
   }
 }

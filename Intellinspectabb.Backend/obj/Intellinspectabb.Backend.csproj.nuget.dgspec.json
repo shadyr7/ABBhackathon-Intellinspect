@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\addys\\OneDrive\\Desktop\\abbhackathon\\Intellinspectabb.Backend\\Intellinspectabb.Backend.csproj": {}
+    "C:\\Users\\addys\\OneDrive\\Desktop\\ABB\\ABBhackathon-Intellinspect\\Intellinspectabb.Backend\\Intellinspectabb.Backend.csproj": {}
   },
   "projects": {
-    "C:\\Users\\addys\\OneDrive\\Desktop\\abbhackathon\\Intellinspectabb.Backend\\Intellinspectabb.Backend.csproj": {
+    "C:\\Users\\addys\\OneDrive\\Desktop\\ABB\\ABBhackathon-Intellinspect\\Intellinspectabb.Backend\\Intellinspectabb.Backend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\addys\\OneDrive\\Desktop\\abbhackathon\\Intellinspectabb.Backend\\Intellinspectabb.Backend.csproj",
+        "projectUniqueName": "C:\\Users\\addys\\OneDrive\\Desktop\\ABB\\ABBhackathon-Intellinspect\\Intellinspectabb.Backend\\Intellinspectabb.Backend.csproj",
         "projectName": "Intellinspectabb.Backend",
-        "projectPath": "C:\\Users\\addys\\OneDrive\\Desktop\\abbhackathon\\Intellinspectabb.Backend\\Intellinspectabb.Backend.csproj",
+        "projectPath": "C:\\Users\\addys\\OneDrive\\Desktop\\ABB\\ABBhackathon-Intellinspect\\Intellinspectabb.Backend\\Intellinspectabb.Backend.csproj",
         "packagesPath": "C:\\Users\\addys\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\addys\\OneDrive\\Desktop\\abbhackathon\\Intellinspectabb.Backend\\obj\\",
+        "outputPath": "C:\\Users\\addys\\OneDrive\\Desktop\\ABB\\ABBhackathon-Intellinspect\\Intellinspectabb.Backend\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\addys\\AppData\\Roaming\\NuGet\\NuGet.Config"

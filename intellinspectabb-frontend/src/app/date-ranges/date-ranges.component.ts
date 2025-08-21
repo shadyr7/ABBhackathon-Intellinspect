@@ -10,23 +10,17 @@ import { DataStateService } from '../services/data-state.services';
 @Component({
   selector: 'app-date-ranges',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    NgxChartsModule
-  ],
+  imports: [CommonModule, FormsModule, NgxChartsModule],
   templateUrl: './date-ranges.component.html',
   styleUrls: ['./date-ranges.component.scss']
 })
 export class DateRangesComponent implements OnInit {
-
+  
   isLoading = false;
   validationResult: any = null;
   errorMessage: string | null = null;
   earliestTimestamp: string | null = null;
   latestTimestamp: string | null = null;
-
-  // Bound to <input type="date">
   trainingStart: string = '';
   trainingEnd: string = '';
   testingStart: string = '';
@@ -34,8 +28,8 @@ export class DateRangesComponent implements OnInit {
   simulationStart: string = '';
   simulationEnd: string = '';
 
-  // Chart variables
   chartData: any[] = [];
+  monthlyCounts: any = null;
   view: [number, number] = [850, 300];
   showXAxis = true;
   showYAxis = true;
@@ -43,10 +37,8 @@ export class DateRangesComponent implements OnInit {
   xAxisLabel = 'Month';
   showYAxisLabel = true;
   yAxisLabel = 'Record Count';
-
-  // Custom colors for bars
   customColors: any[] = [];
-
+  
   constructor(
     private dataStateService: DataStateService,
     private apiService: ApiService,
@@ -54,29 +46,21 @@ export class DateRangesComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.dataStateService.uploadResult$.pipe(take(1)).subscribe(result => {
+    this.dataStateService.uploadResult$.pipe(take(1)).subscribe((result: any) => {
       if (result && result.earliestTimestamp) {
         this.earliestTimestamp = new Date(result.earliestTimestamp).toISOString().split('T')[0];
         this.latestTimestamp = new Date(result.latestTimestamp).toISOString().split('T')[0];
+        this.monthlyCounts = result.monthlyRecordCounts;
       } else {
         this.router.navigate(['/upload']);
       }
     });
   }
-
+  
   validateRanges(): void {
     this.isLoading = true;
     this.validationResult = null;
     this.errorMessage = null;
-
-    // ✅ Ensure all six fields are filled
-    if (!this.trainingStart || !this.trainingEnd ||
-        !this.testingStart || !this.testingEnd ||
-        !this.simulationStart || !this.simulationEnd) {
-      this.isLoading = false;
-      this.errorMessage = "All six date fields must be selected.";
-      return;
-    }
 
     const payload = {
       trainingStart: this.trainingStart,
@@ -92,57 +76,46 @@ export class DateRangesComponent implements OnInit {
         this.isLoading = false;
         this.validationResult = response;
         this.prepareChartData();
-        console.log('Validation successful!', response);
       },
       error: (err: any) => {
         this.isLoading = false;
-        this.errorMessage = err.error?.message || 'An unknown error occurred.';
-        console.error('Validation failed:', err);
+        this.errorMessage = err.error?.message || 'An unknown validation error occurred.';
       }
     });
   }
- 
- prepareChartData(): void {
-      console.log('Monthly record counts:', this.validationResult?.monthlyRecordCounts);
-    const monthlyData = this.validationResult?.monthlyRecordCounts || {};
+
+  prepareChartData(): void {
+    const monthlyData = this.monthlyCounts || {};
     const sortedKeys = Object.keys(monthlyData).sort();
 
     this.chartData = sortedKeys.map(key => ({
       name: key,
       value: monthlyData[key]
     }));
-
-    // Assign colors dynamically
+    
     this.customColors = this.chartData.map(dataPoint => {
-      const monthDateStr = dataPoint.name + '-01'; // assumes YYYY-MM format keys
-
-      if (this.isDateInRange(monthDateStr, this.trainingStart, this.trainingEnd)) {
-        return { name: dataPoint.name, value: '#28a745' }; // Green for Training
-      } else if (this.isDateInRange(monthDateStr, this.testingStart, this.testingEnd)) {
-        return { name: dataPoint.name, value: '#ffc107' }; // Orange for Testing
-      } else if (this.isDateInRange(monthDateStr, this.simulationStart, this.simulationEnd)) {
-        return { name: dataPoint.name, value: '#007bff' }; // Blue for Simulation
-      } else {
-        return { name: dataPoint.name, value: '#cccccc' }; // Gray if not in range
-      }
+        const monthDateStr = dataPoint.name + '-01';
+        if (this.isDateInRange(monthDateStr, this.trainingStart, this.trainingEnd)) {
+            return { name: dataPoint.name, value: '#28a745' };
+        } else if (this.isDateInRange(monthDateStr, this.testingStart, this.testingEnd)) {
+            return { name: dataPoint.name, value: '#ffc107' };
+        } else if (this.isDateInRange(monthDateStr, this.simulationStart, this.simulationEnd)) {
+            return { name: dataPoint.name, value: '#007bff' };
+        } else {
+            return { name: dataPoint.name, value: '#cccccc' };
+        }
     });
   }
 
-
-  // Helper function for coloring the chart bars
   isDateInRange(dateStr: string, startStr: string, endStr: string): boolean {
+    if (!startStr || !endStr) return false;
     const date = new Date(dateStr);
     const start = new Date(startStr);
     const end = new Date(endStr);
     return date >= start && date <= end;
   }
 
-  // For handling bar clicks
-  onSelect(event: any) {
-    console.log('Bar clicked:', event);
-  }
-    goToNext(): void {
-    // Create a payload of the selected dates
+  goToNext(): void {
     const datePayload = {
       trainingStart: this.trainingStart,
       trainingEnd: this.trainingEnd,
@@ -151,8 +124,14 @@ export class DateRangesComponent implements OnInit {
       simulationStart: this.simulationStart,
       simulationEnd: this.simulationEnd
     };
-    // Store it in our shared service
+    // Use the service to store the data
+    console.log('SCREEN 2: Storing these dates in the service:', datePayload);
+
     this.dataStateService.setDateRanges(datePayload);
     this.router.navigate(['/model-training']);
+  }
+
+  onSelect(event: any): void {
+    console.log('Chart bar clicked', event);
   }
 }

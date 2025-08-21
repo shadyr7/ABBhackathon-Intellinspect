@@ -1,13 +1,13 @@
 import { CommonModule, DatePipe, DecimalPipe, NgIf, PercentPipe } from '@angular/common';
 import { Component } from '@angular/core';
-import { Router } from '@angular/router'; // <-- The missing import is here
+import { Router } from '@angular/router';
 import { ApiService } from '../services/api.service';
 import { DataStateService } from '../services/data-state.services';
 
 @Component({
   selector: 'app-upload-dataset',
   standalone: true,
-  imports: [CommonModule, NgIf, DecimalPipe, DatePipe, PercentPipe], 
+  imports: [CommonModule, NgIf, DecimalPipe, DatePipe, PercentPipe],
   templateUrl: './upload-dataset.component.html',
   styleUrls: ['./upload-dataset.component.scss'],
   providers: [DecimalPipe, DatePipe, PercentPipe]
@@ -39,8 +39,10 @@ export class UploadDatasetComponent {
       this.apiService.uploadFile(file).subscribe({
         next: (response: any) => {
           this.isLoading = false;
+
+          // --- STORE RAW RESPONSE AS-IS ---
           this.uploadResult = response;
-          console.log('Upload successful!', response);
+          console.log('Upload successful!', this.uploadResult);
         },
         error: (err: any) => {
           this.isLoading = false;

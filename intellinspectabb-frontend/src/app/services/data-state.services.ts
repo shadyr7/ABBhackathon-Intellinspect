@@ -5,23 +5,23 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root'
 })
 export class DataStateService {
-  // Create a private BehaviorSubject to hold the upload result.
-  // It's initialized with 'null'.
+  // Holds the metadata from the initial file upload
   private uploadResultSource = new BehaviorSubject<any>(null);
-
-  // Create a public observable from the source so components can subscribe to it.
   public uploadResult$ = this.uploadResultSource.asObservable();
+
+  // Holds the date ranges selected on screen 2
   private dateRangesSource = new BehaviorSubject<any>(null);
   public dateRanges$ = this.dateRangesSource.asObservable();
+
   constructor() { }
 
-  // A method to update the stored upload result.
+  // Called from UploadComponent to store the file metadata
   setUploadResult(result: any) {
     this.uploadResultSource.next(result);
   }
-  
 
+  // Called from DateRangesComponent to store the selected dates
   setDateRanges(ranges: any) {
     this.dateRangesSource.next(ranges);
-}
+  }
 }

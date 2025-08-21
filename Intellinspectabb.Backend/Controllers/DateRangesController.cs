@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Intellinspect.Backend.Services;
 using Intellinspect.Backend.Models;
-using Newtonsoft.Json;
+using System;
 using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Net.Http;
-using System;
-using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Intellinspect.Backend.Controllers
 {
@@ -15,6 +15,7 @@ namespace Intellinspect.Backend.Controllers
     public class DateRangesController : ControllerBase
     {
         private readonly DatasetService _datasetService;
+        private static readonly HttpClient _httpClient = new HttpClient();
 
         public DateRangesController(DatasetService datasetService)
         {
@@ -31,14 +32,8 @@ namespace Intellinspect.Backend.Controllers
                 return BadRequest(new { message = "All six date fields must be selected." });
             }
             
-            var response = new ValidationResponse();
             var records = _datasetService.Records;
-
-            if (records.Count == 0)
-            {
-                response.Message = "No dataset found. Please upload a file first.";
-                return BadRequest(response);
-            }
+            if (records.Count == 0) return BadRequest(new { message = "No dataset found." });
 
             var datasetStartDate = ((DateTime)records.First()["synthetic_timestamp"]).Date;
             var datasetEndDate = ((DateTime)records.Last()["synthetic_timestamp"]).Date;
@@ -51,44 +46,30 @@ namespace Intellinspect.Backend.Controllers
             var simulationEndDate = request.SimulationEnd.Value.Date;
             
             if (trainingStartDate > trainingEndDate || testingStartDate > testingEndDate || simulationStartDate > simulationEndDate)
-            {
-                response.Message = "Start date cannot be after the end date for any period.";
-                return BadRequest(response);
-            }
+                return BadRequest(new { message = "Start date cannot be after end date." });
             if (testingStartDate <= trainingEndDate)
-            {
-                response.Message = "Testing period must start after the training period ends.";
-                return BadRequest(response);
-            }
+                return BadRequest(new { message = "Testing period must start after training ends." });
             if (simulationStartDate <= testingEndDate)
-            {
-                response.Message = "Simulation period must start after the testing period ends.";
-                return BadRequest(response);
-            }
+                return BadRequest(new { message = "Simulation period must start after testing ends." });
             if (trainingStartDate < datasetStartDate || simulationEndDate > datasetEndDate)
-            {
-                response.Message = $"All dates must be within the dataset's range ({datasetStartDate:yyyy-MM-dd} to {datasetEndDate:yyyy-MM-dd}).";
-                return BadRequest(response);
-            }
-
-            response.Status = "Valid";
-            response.Message = "Date ranges validated successfully!";
-            
-            response.TrainingDurationDays = (trainingEndDate - trainingStartDate).Days + 1;
-            response.TestingDurationDays = (testingEndDate - testingStartDate).Days + 1;
-            response.SimulationDurationDays = (simulationEndDate - simulationStartDate).Days + 1;
+                return BadRequest(new { message = $"Dates must be within {datasetStartDate:yyyy-MM-dd} to {datasetEndDate:yyyy-MM-dd}." });
 
             Func<DateTime, bool> inTraining = ts => ts.Date >= trainingStartDate && ts.Date <= trainingEndDate;
             Func<DateTime, bool> inTesting = ts => ts.Date >= testingStartDate && ts.Date <= testingEndDate;
             Func<DateTime, bool> inSimulation = ts => ts.Date >= simulationStartDate && ts.Date <= simulationEndDate;
 
-            response.TrainingRecordCount = records.Count(r => inTraining((DateTime)r["synthetic_timestamp"]));
-            response.TestingRecordCount = records.Count(r => inTesting((DateTime)r["synthetic_timestamp"]));
-            response.SimulationRecordCount = records.Count(r => inSimulation((DateTime)r["synthetic_timestamp"]));
-
-            var monthlyCounts = records.GroupBy(r => ((DateTime)r["synthetic_timestamp"]).ToString("yyyy-MM")).ToDictionary(g => g.Key, g => g.Count());
-            response.MonthlyRecordCounts = monthlyCounts;
-
+            var response = new ValidationResponse
+            {
+                Status = "Valid",
+                Message = "Date ranges validated successfully!",
+                TrainingDurationDays = (trainingEndDate - trainingStartDate).Days + 1,
+                TestingDurationDays = (testingEndDate - testingStartDate).Days + 1,
+                SimulationDurationDays = (simulationEndDate - simulationStartDate).Days + 1,
+                TrainingRecordCount = records.Count(r => inTraining((DateTime)r["synthetic_timestamp"])),
+                TestingRecordCount = records.Count(r => inTesting((DateTime)r["synthetic_timestamp"])),
+                SimulationRecordCount = records.Count(r => inSimulation((DateTime)r["synthetic_timestamp"])),
+                MonthlyRecordCounts = records.GroupBy(r => ((DateTime)r["synthetic_timestamp"]).ToString("yyyy-MM")).ToDictionary(g => g.Key, g => g.Count())
+            };
             return Ok(response);
         }
 
@@ -96,13 +77,9 @@ namespace Intellinspect.Backend.Controllers
         public async Task<IActionResult> TrainModel([FromBody] DateRangeRequest request)
         {
             if (_datasetService.Records == null || _datasetService.Records.Count == 0)
-            {
-                return BadRequest(new { message = "No dataset is loaded in memory. Please upload a file first." });
-            }
-            if (!request.TrainingStart.HasValue || !request.TrainingEnd.HasValue || !request.TestingStart.HasValue || !request.TestingEnd.HasValue)
-            {
-                return BadRequest(new { message = "Valid training and testing date ranges are required." });
-            }
+                return BadRequest(new { message = "No dataset loaded." });
+            if (!request.TrainingStart.HasValue || !request.TestingEnd.HasValue)
+                return BadRequest(new { message = "Valid training and testing dates required." });
 
             try
             {
@@ -112,44 +89,33 @@ namespace Intellinspect.Backend.Controllers
                 var testingEndDate = request.TestingEnd.Value.Date;
         
                 var trainingData = _datasetService.Records
-                    .Where(r => ((DateTime)r["synthetic_timestamp"]).Date >= trainingStartDate && ((DateTime)r["synthetic_timestamp"]).Date <= trainingEndDate)
-                    .ToList();
+                    .Where(r => ((DateTime)r["synthetic_timestamp"]).Date >= trainingStartDate && ((DateTime)r["synthetic_timestamp"]).Date <= trainingEndDate).ToList();
                 var testingData = _datasetService.Records
-                    .Where(r => ((DateTime)r["synthetic_timestamp"]).Date >= testingStartDate && ((DateTime)r["synthetic_timestamp"]).Date <= testingEndDate)
-                    .ToList();
+                    .Where(r => ((DateTime)r["synthetic_timestamp"]).Date >= testingStartDate && ((DateTime)r["synthetic_timestamp"]).Date <= testingEndDate).ToList();
 
                 if (trainingData.Count == 0 || testingData.Count == 0)
-                {
-                    return BadRequest(new { message = "The selected date ranges resulted in zero records for training or testing." });
-                }
+                    return BadRequest(new { message = "Date ranges resulted in zero records." });
 
-                using var client = new HttpClient();
                 var mlServiceUrl = "http://ml-service:8000/train";
-                
                 var mlRequestPayload = new { trainingData, testingData };
                 var jsonPayload = JsonConvert.SerializeObject(mlRequestPayload);
                 var content = new StringContent(jsonPayload, System.Text.Encoding.UTF8, "application/json");
 
-                var response = await client.PostAsync(mlServiceUrl, content);
+                var response = await _httpClient.PostAsync(mlServiceUrl, content);
 
                 if (!response.IsSuccessStatusCode)
                 {
                     var errorContent = await response.Content.ReadAsStringAsync();
-                    return StatusCode((int)response.StatusCode, new { message = $"Error from ML Service: {errorContent}" });
+                    return StatusCode((int)response.StatusCode, new { message = $"ML Service Error: {errorContent}" });
                 }
 
                 var responseBody = await response.Content.ReadAsStringAsync();
                 var mlResponse = JsonConvert.DeserializeObject<TrainingResponse>(responseBody);
-                
                 return Ok(mlResponse);
-            }
-            catch (HttpRequestException e)
-            {
-                return StatusCode(503, new { message = $"Could not connect to the ML Service. Is Docker Compose running? Details: {e.Message}" });
             }
             catch (Exception e)
             {
-                return StatusCode(500, new { message = $"An unexpected error occurred: {e.Message}" });
+                return StatusCode(500, new { message = $"Error: {e.Message}" });
             }
         }
     }
