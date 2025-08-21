@@ -45,24 +45,22 @@
     </div>
 
     <!-- Visualizations -->
-    <div class="charts-grid">
-      <div class="chart-card">
-        <h3>Model Performance</h3>
-        <!-- The 'SafeUrl' is needed to display a base64 image -->
-        <img [src]="getSanitizedUrl(trainingResult.confusionMatrixData)" alt="Confusion Matrix Donut Chart">
-      </div>
-      <div class="chart-card">
-        <h3>Training Metrics</h3>
-        <!-- Placeholder for the training loss chart -->
-        <div class="placeholder-chart">
-          <p>Training vs. Loss Chart (Placeholder)</p>
-        </div>
-      </div>
-    </div>
+<div class="charts-grid">
+  <div class="chart-card">
+    <h3>Model Performance</h3>
+    <!-- The 'SafeUrl' is needed to display a base64 image -->
+    <img [src]="getSanitizedUrl(trainingResult.confusionMatrixData)" alt="Confusion Matrix Donut Chart">
+  </div>
+  <div class="chart-card">
+    <h3>Training Metrics</h3>
+    <!-- This will now display the real chart from the backend -->
+    <img [src]="getSanitizedUrl(trainingResult.trainingChartData)" alt="Training vs. Loss Chart">
+  </div>
+</div>
 
     <!-- Next Button -->
     <div class="actions">
-      <button class="next-btn">Next</button>
+      <button class="next-btn" (click)="goToNext()">Next</button>
     </div>
 
   </div>

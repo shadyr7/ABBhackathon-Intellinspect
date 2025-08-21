@@ -1,0 +1,42 @@
+<div class="container">
+  <h1>Real-Time Prediction Simulation</h1>
+  <p>Step 4 of 4</p>
+
+  <div class="actions">
+    <button (click)="startSimulation()" [disabled]="simulationStarted && !simulationComplete">
+      {{ simulationComplete ? 'Restart Simulation' : (simulationStarted ? 'Simulation in Progress...' : 'Start Simulation') }}
+    </button>
+  </div>
+
+  <div *ngIf="simulationComplete" class="status-message">
+    ✓ Simulation completed!
+  </div>
+
+  <div *ngIf="simulationStarted" class="simulation-dashboard">
+    <div class="summary-grid">
+      <div class="summary-card"><h4>Total Predictions</h4><p>{{ totalPredictions }}</p></div>
+      <div class="summary-card"><h4>Pass Count</h4><p class="pass">{{ passCount }}</p></div>
+      <div class="summary-card"><h4>Fail Count</h4><p class="fail">{{ failCount }}</p></div>
+      <div class="summary-card"><h4>Avg. Confidence</h4><p>{{ avgConfidence | number:'1.1-1' }}%</p></div>
+    </div>
+
+    <div class="stream-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Time</th><th>Sample ID</th><th>Prediction</th><th>Confidence</th>
+            <th>Temp (°C)</th><th>Pressure (hPa)</th><th>Humidity (%)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of livePredictions">
+            <td>{{ p.timestamp }}</td><td>{{ p.sampleId }}</td>
+            <td [ngClass]="{'pass': p.prediction === 'Pass', 'fail': p.prediction === 'Fail'}">{{ p.prediction }}</td>
+            <td>{{ p.confidence | number:'1.1-1' }}%</td>
+            <td>{{ p.temperature }}</td><td>{{ p.pressure }}</td><td>{{ p.humidity }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

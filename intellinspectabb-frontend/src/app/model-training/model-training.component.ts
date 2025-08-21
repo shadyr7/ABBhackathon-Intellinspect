@@ -79,4 +79,10 @@ export class ModelTrainingComponent implements OnInit {
     if (!base64Image) return '';
     return this.sanitizer.bypassSecurityTrustUrl('data:image/png;base64,' + base64Image);
   }
+
+  // --- NAVIGATION METHOD ---
+  goToNext(): void {
+    // The simulation screen will get the date ranges from DataStateService
+    this.router.navigate(['/simulation']);
+  }
 }
