@@ -92,8 +92,21 @@ The UI will update live, showing one prediction per second in the table and upda
 Note: The current implementation streams dummy feature data to the saved model but correctly demonstrates the Server-Sent Events (SSE) streaming architecture.
 The simulation will automatically complete, and the button will change to "Restart Simulation".
 ## Technologies Used
-Frontend: Angular (v18+)
-Backend API: ASP.NET Core 8
-ML Service: Python 3.13, FastAPI
-ML Framework: LightGBM, scikit-learn, Pandas
-Deployment: Docker, Docker Compose
+### Frontend
+- Angular (v18+)
+
+### Backend API
+- ASP.NET Core 8
+
+### ML Service
+- Python 3.13
+- FastAPI
+
+### ML Frameworks
+- LightGBM
+- scikit-learn
+- Pandas
+
+### Deployment
+- Docker
+- Docker Compose
